@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - Cube
   - Enemy
+  - BackWall
   layers:
   - Default
   - TransparentFX

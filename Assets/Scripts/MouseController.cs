@@ -19,6 +19,7 @@ public class MouseController : MonoBehaviour
 
     private bool arrowSpawn = false;
 
+
     // Use this for initialization1
     void Start()
     {
@@ -60,6 +61,7 @@ public class MouseController : MonoBehaviour
             if (ball != null && movedBack && ball.isMoving() == false) 
             {
                 ball.Move(targetDir,targetdist);
+                Debug.Log("Moving");
             }
             if (ball == null) 
             {
@@ -92,7 +94,7 @@ public class MouseController : MonoBehaviour
 
         isMoving = true;
     }
-    float targetdist;
+    public float targetdist;
     private bool ballIsMoving =false;
 
     float MoveObject()
