@@ -8,30 +8,19 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Transform puck; 
 
     [SerializeField]private float distanceToBorder = 2f;
-    float Speed = 10f;
+    public float Speed = 10f;
     private bool movingRihgt = false;
-    //private Rigidbody rigidbody;
-    // Start is called before the first frame update
-    void Start()
-    {
-        //rigidbody = GetComponent<Rigidbody>();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     void FixedUpdate()
     {
         if (TargetInRange()) 
         {
-            ///Debug.Log("Target in Range");
             MoveTotarget();
         }
 
         Patroll();
         DetectSides();
+        Debug.Log(Speed);
     }
 
     private void Patroll()
@@ -47,7 +36,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private bool TargetInRange(/*float Range*/) 
+    private bool TargetInRange() 
     {
         if (Vector3.Distance(transform.position, puck.transform.position) < 4f)
         {
@@ -59,7 +48,6 @@ public class Enemy : MonoBehaviour
 
     void MoveTotarget() 
     {
-        
         float Direction = Mathf.Sign(puck.transform.position.x - transform.position.x);
         Vector3 MovePos = new Vector3(
              transform.position.x + Direction * Speed * Time.deltaTime, //MoveTowards on 1 axis
@@ -69,6 +57,7 @@ public class Enemy : MonoBehaviour
         transform.position = MovePos;
     }
 
+   //using raycasts detect distance to walls
     void DetectSides() 
     {
         int layerMask = 1 << 9;

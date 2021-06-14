@@ -1,22 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class SceneManage : MonoBehaviour
 {
+    private int score;
+    [SerializeField] private TextMeshProUGUI scoreText;
     public int blocksCount;
     [SerializeField] private Transform blockPrefab;
     [SerializeField] private TextMeshProUGUI textMeshProUGUI;
     private GameObject[] gos;
     private int levelnumber = 1;
+    private Enemy enemy;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        score = 0;
+        ShowScore();
+
         SpawnBlock.spawnBlocks(blocksCount, blockPrefab);
         textMeshProUGUI.SetText("Level: "+ levelnumber.ToString());
+
+        enemy = GameObject.FindWithTag("Enemy").GetComponent<Enemy>();
+
     }
 
     // Update is called once per frame
@@ -31,21 +37,10 @@ public class SceneManage : MonoBehaviour
             
             textMeshProUGUI.SetText("Level: " + levelnumber.ToString());
 
+            enemy.Speed += 0.5f;
+
         }
     }
-    //change name
-    private void GameWin()
-    {
-        
-    }
-
-    //private void BoxCount() 
-    //{
-
-    //    gos = GameObject.FindGameObjectsWithTag("Box");
-    //    Debug.Log(gos.Length);
-
-    //}
 
     public bool BlockEmount()
     {
@@ -57,5 +52,25 @@ public class SceneManage : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    // Update is called once per frame
+    public void IncreaseScore(int points)
+    {
+        score += points;
+        ShowScore();
+    }
+
+    public void ReduceScore(int points)
+    {
+        score -= points;
+        if (score < 0) score = 0;
+        ShowScore();
+    }
+
+    private void ShowScore()
+    {
+        scoreText.SetText("Score: " + score.ToString());
+
     }
 }

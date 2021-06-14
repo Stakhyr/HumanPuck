@@ -1,42 +1,32 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class MouseController : MonoBehaviour
 {
     Vector3 targetDir;
     private bool isBeingHeld = false;
-    [SerializeField] private Transform arrow;
   
     public float speed = 10f;
     public Vector3 targetPos;
-    public bool isMoving;
+    public bool cubeIsMoving;
     const int MOUSE = 0;
     private static Vector3 startPosition;
-   /* [SerializeField]*/ private MovePuck ball;
+    private PuckController ball;
     private bool movedBack = false;
-
-    private bool arrowSpawn = false;
 
 
     // Use this for initialization1
     void Start()
     {
-        ball = GameObject.FindWithTag("Ball").GetComponent<MovePuck>();
-        //ball = GameObject.FindWithTag("Ball").GetComponent<MovePuck>();
+        ball = GameObject.FindWithTag("Ball").GetComponent<PuckController>();
         startPosition = transform.position;
         targetPos = transform.position;
-        isMoving = false;
+        cubeIsMoving = false;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        //Debug.Log(ball.transform.position);
-
         if (Input.GetMouseButton(MOUSE))
         {
             SetTarggetPosition();
@@ -44,63 +34,49 @@ public class MouseController : MonoBehaviour
         }
         if (isBeingHeld)
         {
-            arrowSpawn = true;
-            if (arrowSpawn == true) 
-            {
-                arrowSpawn = false;
-                //Transform a = Instantiate(arrow, targetDir, Quaternion.identity);
-
-            }
             MoveObject();
         }
         if(isBeingHeld==false && startPosition!=transform.position)
         {
-            arrowSpawn = false;
             MoveBack();
 
             if (ball != null && movedBack && ball.isMoving() == false) 
             {
                 ball.Move(targetDir,targetdist);
-                Debug.Log("Moving");
             }
             if (ball == null) 
             {
-                ball = GameObject.FindWithTag("Ball").GetComponent<MovePuck>();
-                //Debug.Log("Ball null");
+                ball = GameObject.FindWithTag("Ball").GetComponent<PuckController>();
             }
-
-            if(ball.isMoving() == true) 
-            {
-                Debug.Log("WOOOOOrks");
-            }
-
-
         }
        
     }
+    //set move vector for cube
     void  SetTarggetPosition()
     {
         Plane plane = new Plane(Vector3.up, transform.position);
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         float point;
 
-        if (plane.Raycast(ray, out point))
-            targetPos = ray.GetPoint(point);
-        if (targetPos.z > -4f)
+        if (plane.Raycast(ray, out point)) 
         {
-            targetPos.z = -4f;
+            float val = Vector3.Distance(startPosition, ray.GetPoint(point));
+            if (val>0 && val < 4f) 
+            {
+                targetPos = ray.GetPoint(point);
 
+            }
+            else 
+            {
+                targetPos = transform.position;
+            }
+           
         }
-
-        isMoving = true;
+        cubeIsMoving = true;
     }
     public float targetdist;
-    private bool ballIsMoving =false;
-
     float MoveObject()
     {
-
-        
         transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
 
 
@@ -109,21 +85,18 @@ public class MouseController : MonoBehaviour
             targetdist = Vector3.Distance(startPosition, targetPos);
             isBeingHeld = false;
             targetDir = transform.position - startPosition;
-
         }
-        //Debug.DrawLine(transform.position, targetPos, Color.red);
-
-        
         return targetdist;
 
     }
 
+    //cube move to start position
     private void MoveBack()
     {
         
         transform.position = Vector3.MoveTowards(transform.position, startPosition, speed * Time.deltaTime);
 
-        if(Vector3.Distance(transform.position,targetPos)>2f) movedBack = true;
+        if(Vector3.Distance(transform.position,targetPos)>0.5f) movedBack = true;
 
         if (transform.position == startPosition && isBeingHeld==false && targetPos!=startPosition) 
         {
@@ -131,5 +104,14 @@ public class MouseController : MonoBehaviour
         }
     }
 
-   
+
+
+    //allowed range of cube motion
+    void OnDrawGizmosSelected()
+    {
+        Vector3 pos = transform.position;
+
+        float range = 3f;
+        Gizmos.DrawWireSphere(pos, range);
+    }
 }
